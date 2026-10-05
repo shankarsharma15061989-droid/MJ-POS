@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraPOS - Restaurant Point of Sale</title>
+  <meta name="description" content="Next-generation restaurant Point of Sale (POS) system with Floor Plan, Kitchen Display System (KDS), Split-Bill Checkout, and Real-Time Analytics.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div id="app-container">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo">🍷</div>
+        <div class="brand-info">
+          <h1>AURA POS</h1>
+          <div class="status-badge">
+            <span class="status-dot"></span> RESTAURANT SYSTEM ONLINE
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN TABS -->
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="register" id="tab-btn-register">
+          <span>🛒</span> Register
+        </button>
+        <button class="nav-tab-btn" data-tab="floorplan" id="tab-btn-floorplan">
+          <span>🪑</span> Floor Plan
+        </button>
+        <button class="nav-tab-btn" data-tab="kds" id="tab-btn-kds">
+          <span>🍳</span> Kitchen (KDS) <span class="tab-badge" id="kds-count-badge">3</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="inventory" id="tab-btn-inventory">
+          <span>📦</span> Stock
+        </button>
+        <button class="nav-tab-btn" data-tab="analytics" id="tab-btn-analytics">
+          <span>📊</span> Analytics
+        </button>
+      </nav>
+
+      <!-- RIGHT CONTROLS -->
+      <div class="nav-controls">
+        <div class="time-display">
+          <span class="time" id="live-clock-time">14:35:00</span>
+          <span id="live-clock-date">Mon, Oct 5</span>
+        </div>
+
+        <button class="nav-icon-btn" id="audio-toggle-btn" title="Toggle Sound FX">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+        </button>
+
+        <button class="nav-icon-btn" id="pin-lock-btn" title="Lock POS Screen">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </button>
+
+        <div class="staff-pill" id="staff-profile-pill">
+          <div class="staff-avatar" id="user-avatar">SJ</div>
+          <div>
+            <div class="staff-name" id="user-name">Sarah Jenkins</div>
+            <div class="staff-role" id="user-role">Cashier</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="main-viewport">
+
+      <!-- ===================================================================
+           VIEW 1: REGISTER & MENU
+           =================================================================== -->
+      <section class="view-panel active" id="view-register">
+        <div class="register-layout">
+
+          <!-- MENU SECTION -->
+          <div class="menu-section">
+            <div class="menu-header-bar">
+              <div class="search-box">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="pos-search-input" placeholder="Search dishes, drinks, appetizers..." />
+              </div>
+              <div class="diet-filters">
+                <button class="filter-chip active">All Menu</button>
+                <button class="filter-chip">⭐ Chef's Pick</button>
+              </div>
+            </div>
+
+            <!-- CATEGORIES -->
+            <div class="categories-slider" id="categories-slider">
+              <!-- Dynamically Populated -->
+            </div>
+
+            <!-- DISHES GRID -->
+            <div class="dishes-scroll-area">
+              <div class="dishes-grid" id="dishes-grid">
+                <!-- Dynamically Populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- CART SIDEBAR -->
+          <aside class="cart-sidebar">
+            <div class="cart-header">
+              <div class="cart-top-bar">
+                <div class="cart-title">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  <span>Active Ticket</span>
+                </div>
+                <button class="btn-secondary" id="clear-cart-btn" style="padding:4px 10px;font-size:0.75rem;">Clear</button>
+              </div>
+
+              <!-- ORDER TYPE SELECTOR -->
+              <div class="order-type-tabs">
+                <button class="type-btn active" data-type="dine-in">DINE-IN</button>
+                <button class="type-btn" data-type="takeout">TAKEOUT</button>
+                <button class="type-btn" data-type="delivery">DELIVERY</button>
+              </div>
+
+              <div class="table-assigned-info" id="table-assigned-info">
+                <!-- Table assignment info -->
+              </div>
+            </div>
+
+            <!-- ITEMS SCROLL AREA -->
+            <div class="cart-items-list" id="cart-items-list">
+              <!-- Dynamically Populated -->
+            </div>
+
+            <!-- CART FOOTER & TOTALS -->
+            <div class="cart-footer">
+              <div class="calc-row">
+                <span>Subtotal</span>
+                <span id="calc-subtotal">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>Discount <button id="apply-discount-btn" style="background:none;color:var(--primary);text-decoration:underline;font-size:0.75rem;">[Apply]</button></span>
+                <span id="calc-discount" style="color:var(--success);">₹0.00</span>
+              </div>
+              <div class="calc-row">
+                <span>GST (5%) & Service Charge</span>
+                <span id="calc-tax">₹0.00</span>
+              </div>
+              <div class="calc-row total">
+                <span>TOTAL DUE</span>
+                <span id="calc-total">₹0.00</span>
+              </div>
+
+              <div class="cart-actions">
+                <button class="btn-secondary" id="hold-order-btn">
+                  <span>⏸️</span> Hold
+                </button>
+                <button class="btn-primary" id="send-kds-btn">
+                  <span>🍳</span> Send KDS
+                </button>
+                <button class="btn-success" id="pay-checkout-btn">
+                  <span>💳</span> PROCEED TO CHECKOUT
+                </button>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           VIEW 2: FLOOR PLAN
+           =================================================================== -->
+      <section class="view-panel" id="view-floorplan">
+        <div class="floorplan-container">
+          <div class="floor-controls-bar">
+            <div class="zone-selector">
+              <button class="zone-btn active" data-zone="all">All Dining Zones</button>
+              <button class="zone-btn" data-zone="main">Main Dining Hall</button>
+              <button class="zone-btn" data-zone="patio">Outdoor Patio</button>
+              <button class="zone-btn" data-zone="bar">Bar & Lounge</button>
+              <button class="zone-btn" data-zone="vip">VIP Suites</button>
+            </div>
+            <div class="table-legend">
+              <div class="legend-item"><span class="legend-dot available"></span> Available</div>
+              <div class="legend-item"><span class="legend-dot occupied"></span> Occupied</div>
+              <div class="legend-item"><span class="legend-dot bill"></span> Bill Requested</div>
+              <div class="legend-item"><span class="legend-dot reserved"></span> Reserved</div>
+            </div>
+          </div>
+
+          <div class="floor-map-grid" id="floor-map-grid">
+            <!-- Dynamically Populated Tables -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           VIEW 3: KITCHEN DISPLAY SYSTEM (KDS)
+           =================================================================== -->
+      <section class="view-panel" id="view-kds">
+        <div class="kds-container">
+          <div class="kds-header">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <h2 style="font-family:var(--font-heading);font-size:1.3rem;">Kitchen Display System (KDS)</h2>
+              <span style="font-size:0.85rem;color:var(--text-muted);">Active Tickets: <strong id="kds-total-count" style="color:#fff;">3</strong></span>
+            </div>
+            <div class="zone-selector">
+              <button class="filter-chip kds-filter-btn active" data-status="all">All Kitchen Orders</button>
+              <button class="filter-chip kds-filter-btn" data-status="pending">Pending</button>
+              <button class="filter-chip kds-filter-btn" data-status="preparing">Preparing</button>
+              <button class="filter-chip kds-filter-btn" data-status="ready">Ready to Serve</button>
+            </div>
+          </div>
+
+          <div class="kds-grid" id="kds-grid">
+            <!-- Dynamically Populated KDS Cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           VIEW 4: INVENTORY & STOCK
+           =================================================================== -->
+      <section class="view-panel" id="view-inventory">
+        <div class="inventory-container">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="font-family:var(--font-heading);font-size:1.3rem;">Live Menu Inventory & Stock Levels</h2>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Auto-decrements with each order placed</div>
+          </div>
+          <div class="inv-grid" id="inventory-grid">
+            <!-- Dynamically Populated Stock Cards -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           VIEW 5: ANALYTICS & SALES DASHBOARD
+           =================================================================== -->
+      <section class="view-panel" id="view-analytics">
+        <div class="analytics-container">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="font-family:var(--font-heading);font-size:1.3rem;">Sales Analytics & Performance Dashboard</h2>
+            <button class="btn-primary" id="generate-zreport-btn">
+              <span>🧾</span> Generate Z-Report Shift Close
+            </button>
+          </div>
+
+          <!-- METRICS ROW -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-title">TODAY'S NET REVENUE</div>
+              <div class="metric-val" id="metric-today-rev">₹0.00</div>
+            </div>
+            <div class="metric-card accent">
+              <div class="metric-title">COMPLETED ORDERS</div>
+              <div class="metric-val" id="metric-today-orders">0</div>
+            </div>
+            <div class="metric-card success">
+              <div class="metric-title">AVERAGE TICKET</div>
+              <div class="metric-val" id="metric-avg-ticket">₹0.00</div>
+            </div>
+            <div class="metric-card purple">
+              <div class="metric-title">TOP SELLING ITEM</div>
+              <div class="metric-val" id="metric-top-item" style="font-size:1.2rem;">Ribeye Steak</div>
+            </div>
+          </div>
+
+          <!-- CHARTS ROW -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3>Hourly Sales Volume (₹)</h3>
+              <div class="canvas-wrapper">
+                <canvas id="hourly-chart-canvas"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Payment Method Breakdown</h3>
+              <div class="canvas-wrapper">
+                <canvas id="payment-pie-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===================================================================
+       MODAL: ITEM CUSTOMIZATION & MODIFIERS
+       =================================================================== -->
+  <div class="modal-overlay" id="modifier-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="mod-item-title">Customize Item</h3>
+        <button class="modal-close-btn" onclick="document.getElementById('modifier-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body" id="mod-body-container">
+        <!-- Dynamically Populated Modifiers -->
+      </div>
+      <div style="padding:1.25rem;border-top:1px solid var(--border-color);display:flex;justify-content:flex-end;">
+        <button class="btn-primary" id="mod-confirm-btn" style="padding:10px 24px;">Confirm & Add to Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL: PAYMENT & CHECKOUT
+       =================================================================== -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-card" style="max-width:640px;">
+      <div class="modal-header">
+        <div>
+          <h3>Checkout Order <span id="pay-order-id">#ORD-100</span></h3>
+          <div style="font-size:0.8rem;color:var(--text-muted);" id="pay-table-name">Table 1</div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('payment-modal').classList.remove('active')">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="background:var(--bg-dark);padding:1.25rem;border-radius:var(--radius-lg);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:1rem;color:var(--text-muted);font-weight:700;">TOTAL DUE:</span>
+          <span style="font-family:var(--font-heading);font-size:2.2rem;font-weight:800;color:#fff;" id="pay-due-amount">₹0.00</span>
+        </div>
+
+        <!-- SPLIT BILL BUTTONS -->
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:8px;">SPLIT BILL OPTIONS</label>
+          <div style="display:flex;gap:8px;" id="split-buttons-container"></div>
+        </div>
+
+        <!-- PAYMENT METHOD CARDS -->
+        <div class="payment-grid">
+          <div class="pay-method-card active" data-method="cash">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <span style="font-weight:700;font-size:0.9rem;">CASH PAYMENT</span>
+          </div>
+          <div class="pay-method-card" data-method="card">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span style="font-weight:700;font-size:0.9rem;">CREDIT / DEBIT</span>
+          </div>
+        </div>
+
+        <!-- METHOD DETAILS -->
+        <div id="pay-method-details"></div>
+      </div>
+
+      <div style="padding:1.25rem;border-top:1px solid var(--border-color);">
+        <button class="btn-success" id="complete-payment-btn" style="width:100%;padding:14px;">
+          <span>✅</span> COMPLETE & PRINT RECEIPT
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       PIN LOCK SCREEN OVERLAY
+       =================================================================== -->
+  <div class="pin-overlay" id="pin-lock-overlay">
+    <div style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:8px;">🔒</div>
+      <h2 style="font-family:var(--font-heading);font-size:1.8rem;font-weight:700;">AuraPOS System Locked</h2>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-top:4px;">Enter Staff 4-Digit PIN to unlock register</p>
+      <p style="color:var(--primary);font-size:0.8rem;margin-top:4px;font-weight:600;">(Default PINs: Cashier = 1234 | Manager = 9999)</p>
+    </div>
+
+    <div class="pin-pad-container">
+      <div class="pin-dots">
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+      </div>
+
+      <div class="pin-keypad">
+        <button class="pin-key" data-val="1">1</button>
+        <button class="pin-key" data-val="2">2</button>
+        <button class="pin-key" data-val="3">3</button>
+        <button class="pin-key" data-val="4">4</button>
+        <button class="pin-key" data-val="5">5</button>
+        <button class="pin-key" data-val="6">6</button>
+        <button class="pin-key" data-val="7">7</button>
+        <button class="pin-key" data-val="8">8</button>
+        <button class="pin-key" data-val="9">9</button>
+        <button class="pin-key" data-val="clear" style="font-size:0.9rem;">C</button>
+        <button class="pin-key" data-val="0">0</button>
+        <button class="pin-key" data-val="back" style="font-size:0.9rem;">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- HIDDEN THERMAL RECEIPT FOR PRINTING -->
+  <div id="thermal-receipt-container"></div>
+
+  <!-- JAVASCRIPT MODULES -->
+  <script src="js/sound.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/register.js"></script>
+  <script src="js/floorplan.js"></script>
+  <script src="js/kds.js"></script>
+  <script src="js/payment.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
